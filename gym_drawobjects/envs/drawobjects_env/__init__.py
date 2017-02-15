@@ -1,0 +1,1 @@
+from gym_drawobjects.envs.drawobjects_env.environment import DrawObjectsEnv
