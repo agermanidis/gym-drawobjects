@@ -6,14 +6,9 @@ Defines an [OpenAI Gym](https://gym.openai.com/) environment (`drawobjects-v0`) 
 
 ### Environment
 
-The environment can be parametrized by:
-
-* `width`, `height`: dimensions of your canvas
-* `label_idx`: the index of the label you want to draw (consult `resources/id_to_label.txt` to find the index of your desired label)
-
 __Action space__: 6 available actions: UP, DOWN, LEFT, RIGHT, PAINT_WHITE, PAINT_BLACK
 
-__Observation space__: every canvas pixel value plus current position
+__Observation space__: canvas pixel values
 
 __Reward__: The Inception-V3 prediction for your label on the current canvas
 

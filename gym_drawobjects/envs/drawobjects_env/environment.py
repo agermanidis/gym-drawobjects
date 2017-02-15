@@ -39,6 +39,8 @@ class DrawObjectsEnv(gym.Env):
 
         self.last_reward = 0
 
+        self._reset()
+
     def action_to_human_readable(self, action):
         if action == UP:
             return "UP"
@@ -60,32 +62,28 @@ class DrawObjectsEnv(gym.Env):
 
     @property
     def observation_space(self):
-        # width*height dimensions of range [0, 1] for canvas
-        # 1 dimension of range [0,width] for x
-        # 1 dimension of range [0,height] for y
-        dims = width * height * [[0, 1]]
-        dims += [[0, width]]
-        dims += [[0, height]]
-        return spaces.MultiDiscrete(dims)
+        return spaces.Box(low=0.0, high=1.0, shape=(200, 200))
 
     @property
     def action_space(self):
-        # UP, DOWN, LEFT, RIGHT, WHITE, BLACK
+        # UP, DOWN, LEFT, RIGHT, PAINT_WHITE, PAINT_BLACK
         return spaces.Discrete(6)
 
     def _create_new_canvas(self):
-        return Image.new('1', (self.width, self.height), 'white')
+        return Image.new('L', (self.width, self.height), 'white')
 
     def _init_gui(self):
         self.gui = GUI()
         self.gui.start()
 
     def _reset(self):
+        inception.init()
         # start with an empty white canvas
         self.current_canvas = self._create_new_canvas()
         self.current_pixel_data = self.current_canvas.load()
         # start at center
         self.current_pos = (self.width // 2, self.height // 2)
+        return self._observe()
 
     def _redraw(self):
         if not self._is_rendering:
@@ -115,14 +113,13 @@ class DrawObjectsEnv(gym.Env):
             self.current_pos = (max(0, self.current_pos[0]-1), self.current_pos[1])
 
         elif action == PAINT_WHITE:
-            self.current_pixel_data[self.current_pos] = 1
+            self.current_pixel_data[self.current_pos] = 255
 
         else:
             self.current_pixel_data[self.current_pos] = 0
 
     def _observe(self):
-        canvas = np.array(self.current_canvas, dtype=int).flatten()
-        return np.concatenate((canvas, self.current_pos))
+        return np.array(self.current_canvas, dtype=np.float)/255.0
     
     def _reward(self, action):
         self.last_reward = inception.get_prediction(self.current_canvas, self.label_idx)

@@ -1,3 +1,5 @@
+# Adapted from https://github.com/tensorflow/models/blob/master/tutorials/image/imagenet/classify_image.py
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -16,12 +18,13 @@ import tensorflow as tf
 FLAGS = None
 
 # pylint: disable=line-too-long
-DATA_URL = 'http://download.tensorflow.org/models/image/imagenet/inception-v3-2016-03-01.tar.gz'
+DATA_URL = 'http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz'
+
 # pylint: enable=line-too-long
 
-DEST_DIR = '/tmp/inception'
+DEST_DIR = '/tmp/inception/'
 
-def create_graph():
+def init():
   """Creates a graph from saved GraphDef file and returns a saver."""
   # Creates graph from saved graph_def.pb.
   with tf.gfile.FastGFile(os.path.join(
@@ -64,8 +67,7 @@ def maybe_download_and_extract():
 
 
 maybe_download_and_extract()
-create_graph()
-
 
 if __name__ == '__main__':
+  init()
   print(get_prediction(os.path.join(DEST_DIR, 'cropped_panda.jpg'), 169))
